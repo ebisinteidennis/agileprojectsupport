@@ -1,16 +1,38 @@
 name: Build APK
+
 on: push
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
+
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.5'
-      - run: |
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'   # required for AGP 8.x
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Fix Gradle & Kotlin
+        run: |
+          sed -i 's/ext.kotlin_version = .*/ext.kotlin_version = "1.9.22"/' android/build.gradle
+          sed -i 's/com.android.tools.build:gradle:.*/com.android.tools.build:gradle:8.3.2"/' android/build.gradle
+          sed -i 's/distributionUrl=.*/distributionUrl=https\:\/\/services.gradle.org\/distributions\/gradle-8.7-all.zip/' android/gradle/wrapper/gradle-wrapper.properties
+
+      - name: Build APK
+        run: |
           cd flutter_app
           flutter build apk --release --split-per-abi
+
       - uses: actions/upload-artifact@v3
         with:
           name: apk
