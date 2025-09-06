@@ -1,0 +1,162 @@
+Folder PATH listing
+Volume serial number is 4E10-859F
+C:.
+¦   .htaccess
+¦   about.php
+¦   contact.php
+¦   index.php
+¦   install.php
+¦   site_structure.txt
+¦   u562451777_agileproject.sql
+¦   
++---account
+¦   ¦   billing.php
+¦   ¦   chat.php
+¦   ¦   check_messages.php
+¦   ¦   dashboard.php
+¦   ¦   delete-account.php
+¦   ¦   download.php
+¦   ¦   forgot-password.php
+¦   ¦   get-messages.php
+¦   ¦   login.php
+¦   ¦   logout.php
+¦   ¦   messages.php
+¦   ¦   payment.php
+¦   ¦   profile.php
+¦   ¦   regenerate-api-key.php
+¦   ¦   register.php
+¦   ¦   reports.php
+¦   ¦   reset-password.php
+¦   ¦   send-file.php
+¦   ¦   send-message.php
+¦   ¦   visitor-details.php
+¦   ¦   visitors.php
+¦   ¦   widget-settings.php
+¦   ¦   
+¦   +---ajax
+¦           check_messages.php
+¦           
++---admin
+¦       edit-user.php
+¦       export_payments.php
+¦       export_visitors.php
+¦       index.php
+¦       messages.php
+¦       payments.php
+¦       reports.php
+¦       settings.php
+¦       subscriptions.php
+¦       user-details.php
+¦       users.php
+¦       visitors.php
+¦       
++---assets
+¦   +---css
+¦   ¦       chat-widget.css
+¦   ¦       style.css
+¦   ¦       
+¦   +---images
+¦   ¦       bank-transfer.png
+¦   ¦       chat-illustration.png
+¦   ¦       facebook.png
+¦   ¦       flutterwave-sm.png
+¦   ¦       flutterwave.png
+¦   ¦       instagram.png
+¦   ¦       linkedin.png
+¦   ¦       logo.png
+¦   ¦       moniepoint-sm.png
+¦   ¦       moniepoint.png
+¦   ¦       paystack-sm.png
+¦   ¦       paystack.png
+¦   ¦       twitter.png
+¦   ¦       
+¦   +---js
+¦           admin.js
+¦           chat-widget.js
+¦           main.js
+¦           
++---includes
+¦       auth.php
+¦       config.php
+¦       cors-config.php
+¦       db.php
+¦       footer.php
+¦       functions.php
+¦       header.php
+¦       payments.php
+¦       send-push-notification.php
+¦       
++---logs
+¦       realtime_2025-05-20.log
+¦       widget_api_2025-05-18.log
+¦       widget_api_2025-05-19.log
+¦       widget_api_2025-05-20.log
+¦       widget_api_2025-05-21.log
+¦       widget_api_2025-05-24.log
+¦       widget_api_2025-05-25.log
+¦       widget_api_2025-05-26.log
+¦       widget_api_2025-05-27.log
+¦       widget_api_2025-05-28.log
+¦       widget_api_2025-05-30.log
+¦       
++---payments
+¦   ¦   flutterwave.php
+¦   ¦   manual.php
+¦   ¦   moniepoint.php
+¦   ¦   paystack.php
+¦   ¦   verify.php
+¦   ¦   webhook.php
+¦   ¦   
+¦   +---uploads
+¦       +---payments
+¦               6828162e486d9_moniepoint.png
+¦               682f291c65880_IMG_5835.png
+¦               682f292c20086_IMG_5835.png
+¦               6831a0829cb70_JUNIORDICEGLOBALPAY Logo - Original - 5000x5000.png
+¦               683f2b9c91f92_WhatsApp Image 2025-06-03 at 10.05.22_2e0b8a0d.jpg
+¦               
++---setup
+¦       check_requirements.php
+¦       database_migration.sql
+¦       
++---uploads
+¦   +---chat
+¦   ¦   +---YYYY
+¦   ¦       +---MM
+¦   +---files
+¦   +---messages
+¦   ¦       68397fde160db_1715410211226-removebg-preview.png
+¦   ¦       683983629e276_1715410211226-removebg-preview.png
+¦   ¦       
+¦   +---payments
+¦   +---widget_logos
+¦           widget_logo_682d47254440d.png
+¦           widget_logo_682d475760c74.png
+¦           
++---widget
+¦       api.php
+¦       api_test.php
+¦       chat-widget-v2.js
+¦       chat.php
+¦       diagnostic.php
+¦       embed.js
+¦       test_api.php
+¦       test_api_send.php
+¦       test_insert.php
+¦       widget_message_test.php
+¦       
++---wordpresspluggin
+    ¦   livesupport-chat.zip
+    ¦   
+    +---livesupport-chat
+        ¦   livesupport-chat.php
+        ¦   readme.txt
+        ¦   
+        +---admin
+        ¦       admin.php
+        ¦       
+        +---includes
+                class-livesupport.php
+                functions.php
+                widget-loader.php
+                
