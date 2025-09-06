@@ -13,27 +13,32 @@ jobs:
         with:
           flutter-version: '3.24.5'
 
+      # ✅ Install Java 17 (required for AGP 8.x)
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '17'   # required for AGP 8.x
+          java-version: '17'
 
-      - name: Install dependencies
+      # ✅ Install dependencies
+      - name: Install Flutter dependencies
         run: flutter pub get
 
-      - name: Fix Gradle & Kotlin
+      # ✅ Fix Gradle & Kotlin versions for Flutter 3.24.5
+      - name: Configure Gradle & Kotlin
         run: |
           sed -i 's/ext.kotlin_version = .*/ext.kotlin_version = "1.9.22"/' android/build.gradle
           sed -i 's/com.android.tools.build:gradle:.*/com.android.tools.build:gradle:8.3.2"/' android/build.gradle
           sed -i 's/distributionUrl=.*/distributionUrl=https\:\/\/services.gradle.org\/distributions\/gradle-8.7-all.zip/' android/gradle/wrapper/gradle-wrapper.properties
 
-      - name: Build APK
+      # ✅ Build AAB instead of APK
+      - name: Build AppBundle
         run: |
           cd flutter_app
-          flutter build apk --release --split-per-abi
+          flutter build appbundle --release
 
+      # ✅ Upload generated artifacts
       - uses: actions/upload-artifact@v3
         with:
-          name: apk
-          path: flutter_app/build/app/outputs/apk/release/
+          name: appbundle
+          path: flutter_app/build/app/outputs/bundle/release/*.aab
