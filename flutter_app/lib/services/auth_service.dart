@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import '../models/user.dart';
+import '../models/user.dart' hide ApiResponse;
 import '../models/api_response.dart';
 import '../config/app_config.dart';
 import 'api_service.dart';
