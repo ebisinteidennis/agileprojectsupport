@@ -181,7 +181,7 @@ class ApiService {
         message = responseData['message'] ?? message;
       } else {
         switch (error.type) {
-          case DioExceptionType.connectTimeout:
+          case DioExceptionType.connectionTimeout:
           case DioExceptionType.receiveTimeout:
           case DioExceptionType.sendTimeout:
             message = 'Request timeout. Please check your internet connection.';
@@ -279,19 +279,19 @@ class ErrorInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) {
     // Handle specific error cases
     switch (err.response?.statusCode) {
-      case ApiStatusCodes.unauthorized:
+      case 401:
         // Handle unauthorized access
         _handleUnauthorized();
         break;
-      case ApiStatusCodes.forbidden:
+      case 403:
         // Handle forbidden access
         _handleForbidden();
         break;
-      case ApiStatusCodes.tooManyRequests:
+      case 429:
         // Handle rate limiting
         _handleRateLimit();
         break;
-      case ApiStatusCodes.internalServerError:
+      case 500:
         // Handle server errors
         _handleServerError();
         break;
@@ -353,7 +353,7 @@ class RetryInterceptor extends Interceptor {
   }
 
   bool _shouldRetry(DioException err) {
-    return err.type == DioExceptionType.connectTimeout ||
+    return err.type == DioExceptionType.connectionTimeout ||
            err.type == DioExceptionType.receiveTimeout ||
            err.type == DioExceptionType.sendTimeout ||
            err.response?.statusCode == 500;

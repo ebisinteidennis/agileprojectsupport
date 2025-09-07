@@ -6,6 +6,9 @@ class AppConstants {
   static const String appVersion = '1.0.0';
   static const String supportEmail = 'support@yourdomain.com';
   
+  // Font
+  static const String fontFamily = 'Roboto';
+  
   // Colors
   static const Color primaryColor = Color(0xFF2196F3);
   static const Color accentColor = Color(0xFF03DAC6);

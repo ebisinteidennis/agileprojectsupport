@@ -38,4 +38,8 @@ class AppConfig {
   static const bool requireBiometric = false;
   static const int sessionTimeout = 3600; // seconds
   static const bool enableOfflineMode = true;
+
+  static const String settingsKey = 'app_settings';
+  static const String notificationKey = 'notification_settings';
+
 }

@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-
 part 'api_response.g.dart';
 
 @JsonSerializable(genericArgumentFactories: true)
@@ -62,6 +61,9 @@ class ApiResponse<T> {
       statusCode: statusCode,
     );
   }
+
+  // Check if response is successful
+  bool get isSuccess => success;
 
   // Check if response has data
   bool get hasData => data != null;

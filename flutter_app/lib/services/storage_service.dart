@@ -10,14 +10,7 @@ class StorageService {
   factory StorageService() => _instance;
   StorageService._internal();
 
-  static const _secureStorage = FlutterSecureStorage(
-    aOptions: AndroidOptions(
-      encryptedSharedPreferences: true,
-    ),
-    iOptions: IOSOptions(
-      accessibility: IOSAccessibility.first_unlock_this_device,
-    ),
-  );
+  static const _secureStorage = FlutterSecureStorage();
 
   SharedPreferences? _prefs;
 
@@ -114,7 +107,7 @@ class StorageService {
   Future<void> setSettings(Map<String, dynamic> settings) async {
     try {
       final settingsJson = jsonEncode(settings);
-      await prefs.setString(AppConfig.settingsKey, settingsJson);
+      await prefs.setString('app_settings', settingsJson);
     } catch (e) {
       if (AppConfig.enableLogging) {
         debugPrint('❌ Failed to store settings: $e');
@@ -125,7 +118,7 @@ class StorageService {
   // Get app settings
   Future<Map<String, dynamic>?> getSettings() async {
     try {
-      final settingsJson = prefs.getString(AppConfig.settingsKey);
+      final settingsJson = prefs.getString('app_settings');
       if (settingsJson != null) {
         return jsonDecode(settingsJson) as Map<String, dynamic>;
       }
@@ -144,7 +137,7 @@ class StorageService {
   Future<void> setNotificationSettings(Map<String, dynamic> settings) async {
     try {
       final settingsJson = jsonEncode(settings);
-      await prefs.setString(AppConfig.notificationKey, settingsJson);
+      await prefs.setString('notification_settings', settingsJson);
     } catch (e) {
       if (AppConfig.enableLogging) {
         debugPrint('❌ Failed to store notification settings: $e');
@@ -155,7 +148,7 @@ class StorageService {
   // Get notification settings
   Future<Map<String, dynamic>> getNotificationSettings() async {
     try {
-      final settingsJson = prefs.getString(AppConfig.notificationKey);
+      final settingsJson = prefs.getString('notification_settings');
       if (settingsJson != null) {
         return jsonDecode(settingsJson) as Map<String, dynamic>;
       }
