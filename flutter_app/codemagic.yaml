@@ -6,7 +6,7 @@ workflows:
     environment:
       vars:
         JAVA_TOOL_OPTIONS: "-Xmx4g"
-        GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g"
+        GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=true -Dorg.gradle.parallel=true"
       flutter: stable
     scripts:
       - name: Get Flutter packages
