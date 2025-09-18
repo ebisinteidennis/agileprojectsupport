@@ -25,6 +25,7 @@ class AuthService extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isLoggedIn => _isLoggedIn;
   bool get hasActiveSubscription => _currentUser?.hasActiveSubscription ?? false;
+  bool get isAuthenticated => _currentUser != null;
 
   // Initialize auth service
   Future<void> initialize() async {
