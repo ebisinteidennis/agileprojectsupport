@@ -6,18 +6,20 @@ workflows:
     environment:
       vars:
         JAVA_TOOL_OPTIONS: "-Xmx4g"
-        GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=true -Dorg.gradle.parallel=true"
+        GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g"
       flutter: stable
     scripts:
-      - name: Get Flutter packages
+      - name: Clean and force dependency update
         script: |
           cd flutter_app
-          flutter packages pub get
+          rm -f pubspec.lock
+          flutter clean
+          flutter pub get --enforce-lockfile=false
 
-      - name: Build AAB with bypass flags
+      - name: Build AAB
         script: |
           cd flutter_app
-          flutter build appbundle --debug --android-skip-build-dependency-validation --build-number=$PROJECT_BUILD_NUMBER
+          flutter build appbundle --debug --build-number=$PROJECT_BUILD_NUMBER
 
     artifacts:
       - flutter_app/build/**/outputs/**/*.aab
