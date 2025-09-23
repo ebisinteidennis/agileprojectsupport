@@ -34,11 +34,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final authService = Provider.of<AuthService>(context, listen: false);
-      final success = await authService.login(
-        _emailController.text.trim(),
-        _passwordController.text,
-        rememberMe: _rememberMe,
+      final result = await authService.login(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
       );
+      final success = result.isSuccess;
 
       if (success && mounted) {
         AppHelpers.showSnackBar(

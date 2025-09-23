@@ -5,27 +5,154 @@ workflows:
     max_build_duration: 120
     environment:
       vars:
-        JAVA_TOOL_OPTIONS: "-Xmx4g"
-        GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g"
+        # Java and Gradle optimization
+        JAVA_TOOL_OPTIONS: "-Xmx4g -XX:+UseG1GC"
+        GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=true -Dorg.gradle.parallel=true"
+        GRADLE_USER_HOME: $CM_BUILD_DIR/.gradle
+        # Flutter optimization
+        PUB_CACHE: $HOME/.pub-cache
       flutter: stable
+      java: 17
+    cache:
+      cache_paths:
+        - $FLUTTER_ROOT/.pub-cache
+        - $CM_BUILD_DIR/.gradle/wrapper
+        - $CM_BUILD_DIR/.gradle/caches
     scripts:
-      - name: Clean and force dependency update
+      - name: Set up environment
+        script: |
+          echo "Flutter version:"
+          flutter --version
+          echo "Java version:"
+          java -version
+          
+      - name: Clean and prepare
         script: |
           cd flutter_app
-          rm -f pubspec.lock
+          # Clean previous builds
           flutter clean
-          flutter pub get --enforce-lockfile=false
-
-      - name: Build AAB
+          
+          # Remove lock file to prevent conflicts
+          rm -f pubspec.lock
+          
+          # Clear pub cache if needed
+          flutter pub cache repair
+          
+      - name: Get dependencies
         script: |
           cd flutter_app
-          flutter build appbundle --debug --build-number=$PROJECT_BUILD_NUMBER
+          # Get dependencies
+          flutter pub get
+          
+          # Generate code if needed (for json_serializable)
+          flutter packages pub run build_runner build --delete-conflicting-outputs
+          
+      - name: Analyze code
+        script: |
+          cd flutter_app
+          # Run static analysis
+          flutter analyze --fatal-infos
+          
+      - name: Update Android configuration
+        script: |
+          cd flutter_app
+          # Update compileSdk to avoid warnings
+          sed -i 's/compileSdk 34/compileSdk 36/g' android/app/build.gradle
+          
+      - name: Build APK (Debug)
+        script: |
+          cd flutter_app
+          # Build debug APK for testing
+          flutter build apk --debug --build-number=$PROJECT_BUILD_NUMBER --build-name=1.0.$PROJECT_BUILD_NUMBER
+          
+      - name: Build APK (Release)
+        script: |
+          cd flutter_app
+          # Build release APK
+          flutter build apk --release --build-number=$PROJECT_BUILD_NUMBER --build-name=1.0.$PROJECT_BUILD_NUMBER
+          
+      - name: Build AAB (Release)
+        script: |
+          cd flutter_app
+          # Build Android App Bundle for Play Store
+          flutter build appbundle --release --build-number=$PROJECT_BUILD_NUMBER --build-name=1.0.$PROJECT_BUILD_NUMBER
 
     artifacts:
-      - flutter_app/build/**/outputs/**/*.aab
-      - flutter_app/build/**/outputs/**/*.apk
+      - flutter_app/build/app/outputs/flutter-apk/*.apk
+      - flutter_app/build/app/outputs/bundle/release/*.aab
+      - flutter_app/build/app/outputs/mapping/release/mapping.txt
 
     publishing:
       email:
         recipients:
           - your-email@example.com
+        notify:
+          success: true
+          failure: true
+
+  # Alternative workflow for faster testing (APK only)
+  android-debug:
+    name: Android Debug Build
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      vars:
+        JAVA_TOOL_OPTIONS: "-Xmx3g"
+        GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx3g"
+      flutter: stable
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: 'develop'
+          include: true
+          source: true
+    scripts:
+      - name: Clean and build debug
+        script: |
+          cd flutter_app
+          flutter clean
+          flutter pub get
+          flutter build apk --debug --build-number=$PROJECT_BUILD_NUMBER
+
+    artifacts:
+      - flutter_app/build/app/outputs/flutter-apk/*.apk
+
+  # iOS workflow (if needed later)
+  ios-workflow:
+    name: iOS Build
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    environment:
+      vars:
+        XCODE_WORKSPACE: "Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: 'main'
+          include: true
+          source: true
+        - pattern: 'release/*'
+          include: true
+          source: true
+    scripts:
+      - name: Set up environment
+        script: |
+          cd flutter_app
+          flutter clean
+          flutter pub get
+          find . -name "Podfile" -execdir pod install \;
+          
+      - name: Build iOS
+        script: |
+          cd flutter_app
+          flutter build ipa --release --build-number=$PROJECT_BUILD_NUMBER --build-name=1.0.$PROJECT_BUILD_NUMBER
+
+    artifacts:
+      - flutter_app/build/ios/ipa/*.ipa
+      - flutter_app/build/ios/archive/Runner.xcarchive/**/*

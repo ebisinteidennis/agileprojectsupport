@@ -4,6 +4,10 @@ import '../../services/auth_service.dart';
 import '../../models/user.dart';
 import '../../utils/constants.dart';
 import '../../utils/helpers.dart';
+// ✅ Add these missing imports:
+import '../chat/chat_list_screen.dart';
+import '../visitors/visitors_screen.dart';
+import 'profile_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});

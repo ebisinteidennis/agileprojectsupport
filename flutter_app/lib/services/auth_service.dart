@@ -359,32 +359,32 @@ class AuthService extends ChangeNotifier {
   }
 
   // Validate password strength
-  Map<String, dynamic> validatePassword(String password) {
-    final result = {
-      'isValid': false,
-      'errors': <String>[],
-      'strength': 'weak',
-    };
+Map<String, dynamic> validatePassword(String password) {
+  final result = {
+    'isValid': false,
+    'errors': <String>[],
+    'strength': 'weak',
+  };
 
-    if (password.length < 6) {
-      result['errors'].add('Password must be at least 6 characters long');
-    }
-
-    if (!RegExp(r'^(?=.*[a-zA-Z])(?=.*\d)').hasMatch(password)) {
-      result['errors'].add('Password must contain at least one letter and one number');
-    }
-
-    if (password.length >= 8 && 
-        RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])').hasMatch(password)) {
-      result['strength'] = 'strong';
-    } else if (password.length >= 6 && 
-               RegExp(r'^(?=.*[a-zA-Z])(?=.*\d)').hasMatch(password)) {
-      result['strength'] = 'medium';
-    }
-
-    result['isValid'] = (result['errors'] as List).isEmpty;
-    return result;
+  if (password.length < 6) {
+    (result['errors'] as List<String>).add('Password must be at least 6 characters long');
   }
+
+  if (!RegExp(r'^(?=.*[a-zA-Z])(?=.*\d)').hasMatch(password)) {
+    (result['errors'] as List<String>).add('Password must contain at least one letter and one number');
+  }
+
+  if (password.length >= 8 && 
+      RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])').hasMatch(password)) {
+    result['strength'] = 'strong';
+  } else if (password.length >= 6 && 
+             RegExp(r'^(?=.*[a-zA-Z])(?=.*\d)').hasMatch(password)) {
+    result['strength'] = 'medium';
+  }
+
+  result['isValid'] = (result['errors'] as List<String>).isEmpty;
+  return result;
+}
 
   // Check if subscription is expiring soon
   bool isSubscriptionExpiringSoon({int days = 7}) {

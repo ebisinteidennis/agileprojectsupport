@@ -47,11 +47,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     try {
       final authService = Provider.of<AuthService>(context, listen: false);
-      final success = await authService.register(
-        _nameController.text.trim(),
-        _emailController.text.trim(),
-        _passwordController.text,
+      final result = await authService.register(
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
       );
+      final success = result.isSuccess;
 
       if (success && mounted) {
         AppHelpers.showSnackBar(

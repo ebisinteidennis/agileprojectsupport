@@ -3,6 +3,9 @@ class User {
   final int id;
   final String name;
   final String email;
+  final String? phone;        // ✅ Add this
+  final String? bio;          // ✅ Add this
+  final String? avatar;       // ✅ Add this
   final String subscriptionStatus;
   final String? subscriptionExpiry;
   final String widgetId;
@@ -16,6 +19,9 @@ class User {
     required this.id,
     required this.name,
     required this.email,
+    this.phone,               // ✅ Add this
+    this.bio,                 // ✅ Add this
+    this.avatar,              // ✅ Add this
     required this.subscriptionStatus,
     this.subscriptionExpiry,
     required this.widgetId,
@@ -31,6 +37,9 @@ class User {
       id: json['id'],
       name: json['name'],
       email: json['email'],
+      phone: json['phone'],           // ✅ Add this
+      bio: json['bio'],               // ✅ Add this
+      avatar: json['avatar'],         // ✅ Add this
       subscriptionStatus: json['subscription_status'],
       subscriptionExpiry: json['subscription_expiry'],
       widgetId: json['widget_id'],
@@ -55,6 +64,9 @@ class User {
       'id': id,
       'name': name,
       'email': email,
+      'phone': phone,                 // ✅ Add this
+      'bio': bio,                     // ✅ Add this
+      'avatar': avatar,               // ✅ Add this
       'subscription_status': subscriptionStatus,
       'subscription_expiry': subscriptionExpiry,
       'widget_id': widgetId,
