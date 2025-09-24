@@ -38,7 +38,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       AppHelpers.showSnackBar(
         context,
         'Please agree to the terms and conditions',
-        type: MessageType.warning,
+        type: SnackBarType.warning,  // ✅ Fixed to use SnackBarType
       );
       return;
     }
@@ -58,7 +58,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         AppHelpers.showSnackBar(
           context,
           AppConstants.registerSuccessMessage,
-          type: MessageType.success,
+          type: SnackBarType.success,  // ✅ Fixed to use SnackBarType
         );
         Navigator.of(context).pushReplacementNamed('/dashboard');
       }
@@ -67,7 +67,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         AppHelpers.showSnackBar(
           context,
           'Registration failed. Please try again.',
-          type: MessageType.error,
+          type: SnackBarType.error,  // ✅ Fixed to use SnackBarType
         );
       }
     } finally {

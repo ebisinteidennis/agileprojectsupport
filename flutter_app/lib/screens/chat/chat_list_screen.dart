@@ -28,7 +28,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
     setState(() => _isLoading = true);
     
     try {
-      final conversations = await _messageService.getConversations();
+      final conversations = await _messageService.getConversations();  // ✅ Now this method exists
       if (mounted) {
         setState(() {
           _conversations = conversations;
@@ -40,7 +40,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
         AppHelpers.showSnackBar(
           context,
           'Failed to load conversations',
-          type: MessageType.error,
+          type: SnackBarType.error,  // ✅ Fixed to use SnackBarType
         );
         setState(() => _isLoading = false);
       }

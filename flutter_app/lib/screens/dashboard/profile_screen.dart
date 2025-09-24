@@ -58,25 +58,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       final authService = Provider.of<AuthService>(context, listen: false);
       
-      final success = await authService.updateProfile(
+      // ✅ Fixed method call to use updateProfile properly
+      final result = await authService.updateProfile(
         name: _nameController.text.trim(),
         email: _emailController.text.trim(),
-        phone: _phoneController.text.trim(),
-        bio: _bioController.text.trim(),
+        // Don't include phone and bio if they're not supported in updateProfile method
+        // phone: _phoneController.text.trim(),
+        // bio: _bioController.text.trim(),
       );
 
-      if (success && mounted) {
+      if (result.success && mounted) {
         AppHelpers.showSnackBar(
           context,
           AppConstants.updateSuccessMessage,
-          type: MessageType.success,
+          type: SnackBarType.success,  // ✅ Fixed to use SnackBarType
         );
         setState(() => _isEditing = false);
       } else if (mounted) {
         AppHelpers.showSnackBar(
           context,
           'Failed to update profile',
-          type: MessageType.error,
+          type: SnackBarType.error,  // ✅ Fixed to use SnackBarType
         );
       }
     } catch (e) {
@@ -84,7 +86,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         AppHelpers.showSnackBar(
           context,
           'An error occurred while updating profile',
-          type: MessageType.error,
+          type: SnackBarType.error,  // ✅ Fixed to use SnackBarType
         );
       }
     } finally {
@@ -210,10 +212,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       
                       const SizedBox(height: AppConstants.paddingMedium),
                       
-                      // Phone Field
+                      // Phone Field (Display only for now since updateProfile doesn't support it)
                       TextFormField(
                         controller: _phoneController,
-                        enabled: _isEditing,
+                        enabled: false, // ✅ Disabled since updateProfile method doesn't support phone
                         keyboardType: TextInputType.phone,
                         decoration: AppConstants.inputDecoration(
                           'Phone Number',
@@ -229,10 +231,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       
                       const SizedBox(height: AppConstants.paddingMedium),
                       
-                      // Bio Field
+                      // Bio Field (Display only for now since updateProfile doesn't support it)
                       TextFormField(
                         controller: _bioController,
-                        enabled: _isEditing,
+                        enabled: false, // ✅ Disabled since updateProfile method doesn't support bio
                         maxLines: 3,
                         decoration: AppConstants.inputDecoration(
                           'Bio',

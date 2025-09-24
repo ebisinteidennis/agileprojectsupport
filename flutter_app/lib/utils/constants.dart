@@ -154,8 +154,8 @@ class AppConstants {
   static const String deleteSuccessMessage = 'Deleted successfully!';
 }
 
-// Message Types
-enum MessageType {
+// ✅ Renamed from MessageType to avoid conflict with models/message.dart
+enum SnackBarType {
   info,
   success,
   warning,

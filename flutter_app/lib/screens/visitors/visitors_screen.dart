@@ -44,19 +44,20 @@ class _VisitorsScreenState extends State<VisitorsScreen>
         _apiService.get<VisitorStats>(
           ApiEndpoints.getVisitorStats,
           queryParameters: {'period': _selectedPeriod},
-          fromJson: (json) => VisitorStats.fromJson(json),
+          fromJson: (json) => VisitorStats.fromJson(json as Map<String, dynamic>),
         ),
         _apiService.get<List<Visitor>>(
           ApiEndpoints.getVisitors,
           queryParameters: {'period': _selectedPeriod},
           fromJson: (json) => (json as List)
-              .map((item) => Visitor.fromJson(item))
+              .map((item) => Visitor.fromJson(item as Map<String, dynamic>))
               .toList(),
         ),
       ]);
 
       if (mounted) {
         setState(() {
+          // ✅ Fixed type casting issues
           _stats = statsResponse.data;
           _visitors = visitorsResponse.data ?? [];
           _isLoading = false;
@@ -67,7 +68,7 @@ class _VisitorsScreenState extends State<VisitorsScreen>
         AppHelpers.showSnackBar(
           context,
           'Failed to load visitor data',
-          type: MessageType.error,
+          type: SnackBarType.error,  // ✅ Fixed to use SnackBarType
         );
         setState(() => _isLoading = false);
       }

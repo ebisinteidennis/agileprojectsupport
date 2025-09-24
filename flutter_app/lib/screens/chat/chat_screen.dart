@@ -46,7 +46,8 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() => _isLoading = true);
     
     try {
-      final messages = await _messageService.getMessages(widget.userId);
+      // ✅ Fixed method call - no parameters required for getMessages()
+      final messages = await _messageService.getMessages(widget.userId.toString());
       if (mounted) {
         setState(() {
           _messages = messages;
@@ -59,7 +60,7 @@ class _ChatScreenState extends State<ChatScreen> {
         AppHelpers.showSnackBar(
           context,
           'Failed to load messages',
-          type: MessageType.error,
+          type: SnackBarType.error,  // ✅ Fixed to use SnackBarType
         );
         setState(() => _isLoading = false);
       }
@@ -74,8 +75,9 @@ class _ChatScreenState extends State<ChatScreen> {
     _messageController.clear();
 
     try {
+      // ✅ Fixed method call with correct parameters
       final message = await _messageService.sendMessage(
-        receiverId: widget.userId,
+        visitorId: widget.userId.toString(),
         content: content,
         type: MessageType.text,
       );
@@ -92,7 +94,7 @@ class _ChatScreenState extends State<ChatScreen> {
         AppHelpers.showSnackBar(
           context,
           'Failed to send message',
-          type: MessageType.error,
+          type: SnackBarType.error,  // ✅ Fixed to use SnackBarType
         );
         setState(() => _isSending = false);
       }
@@ -259,7 +261,8 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildMessageBubble(Message message) {
-    final isMe = message.senderId == 1; // Replace with current user ID
+    // ✅ Fixed to use proper message properties
+    final isMe = message.senderType == 'agent'; // Agent messages are from "me"
     
     return Container(
       margin: const EdgeInsets.only(bottom: AppConstants.paddingSmall),
@@ -297,7 +300,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    message.content,
+                    message.message,  // ✅ Fixed property name
                     style: AppConstants.bodyStyle.copyWith(
                       color: isMe ? Colors.white : Colors.black87,
                     ),

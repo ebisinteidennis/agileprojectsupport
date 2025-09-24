@@ -44,14 +44,14 @@ class _LoginScreenState extends State<LoginScreen> {
         AppHelpers.showSnackBar(
           context,
           AppConstants.loginSuccessMessage,
-          type: MessageType.success,
+          type: SnackBarType.success,  // ✅ Fixed to use SnackBarType
         );
         Navigator.of(context).pushReplacementNamed('/dashboard');
       } else if (mounted) {
         AppHelpers.showSnackBar(
           context,
           'Invalid email or password. Please try again.',
-          type: MessageType.error,
+          type: SnackBarType.error,  // ✅ Fixed to use SnackBarType
         );
       }
     } catch (e) {
@@ -59,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
         AppHelpers.showSnackBar(
           context,
           'Login failed. Please try again.',
-          type: MessageType.error,
+          type: SnackBarType.error,  // ✅ Fixed to use SnackBarType
         );
       }
     } finally {

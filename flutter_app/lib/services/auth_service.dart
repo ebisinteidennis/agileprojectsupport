@@ -225,10 +225,12 @@ class AuthService extends ChangeNotifier {
     return false;
   }
 
-  // Update user profile
+  // ✅ Fixed updateProfile method to return proper ApiResponse<User>
   Future<ApiResponse<User>> updateProfile({
     String? name,
     String? email,
+    String? phone,
+    String? bio,
     String? currentPassword,
     String? newPassword,
   }) async {
@@ -248,6 +250,8 @@ class AuthService extends ChangeNotifier {
       
       if (name != null) data['name'] = name.trim();
       if (email != null) data['email'] = email.trim().toLowerCase();
+      if (phone != null) data['phone'] = phone.trim();
+      if (bio != null) data['bio'] = bio.trim();
       if (currentPassword != null) data['current_password'] = currentPassword;
       if (newPassword != null) data['new_password'] = newPassword;
 
@@ -359,32 +363,32 @@ class AuthService extends ChangeNotifier {
   }
 
   // Validate password strength
-Map<String, dynamic> validatePassword(String password) {
-  final result = {
-    'isValid': false,
-    'errors': <String>[],
-    'strength': 'weak',
-  };
+  Map<String, dynamic> validatePassword(String password) {
+    final result = {
+      'isValid': false,
+      'errors': <String>[],
+      'strength': 'weak',
+    };
 
-  if (password.length < 6) {
-    (result['errors'] as List<String>).add('Password must be at least 6 characters long');
+    if (password.length < 6) {
+      (result['errors'] as List<String>).add('Password must be at least 6 characters long');
+    }
+
+    if (!RegExp(r'^(?=.*[a-zA-Z])(?=.*\d)').hasMatch(password)) {
+      (result['errors'] as List<String>).add('Password must contain at least one letter and one number');
+    }
+
+    if (password.length >= 8 && 
+        RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])').hasMatch(password)) {
+      result['strength'] = 'strong';
+    } else if (password.length >= 6 && 
+               RegExp(r'^(?=.*[a-zA-Z])(?=.*\d)').hasMatch(password)) {
+      result['strength'] = 'medium';
+    }
+
+    result['isValid'] = (result['errors'] as List<String>).isEmpty;
+    return result;
   }
-
-  if (!RegExp(r'^(?=.*[a-zA-Z])(?=.*\d)').hasMatch(password)) {
-    (result['errors'] as List<String>).add('Password must contain at least one letter and one number');
-  }
-
-  if (password.length >= 8 && 
-      RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])').hasMatch(password)) {
-    result['strength'] = 'strong';
-  } else if (password.length >= 6 && 
-             RegExp(r'^(?=.*[a-zA-Z])(?=.*\d)').hasMatch(password)) {
-    result['strength'] = 'medium';
-  }
-
-  result['isValid'] = (result['errors'] as List<String>).isEmpty;
-  return result;
-}
 
   // Check if subscription is expiring soon
   bool isSubscriptionExpiringSoon({int days = 7}) {

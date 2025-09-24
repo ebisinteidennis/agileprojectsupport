@@ -2,6 +2,7 @@ class AppConfig {
   // API Configuration
   static const String apiUrl = 'https://agileproject.site/api/';
   static const String websiteUrl = 'https://agileproject.site/';
+  static const String websocketUrl = 'wss://agileproject.site/websocket';  // ✅ Added missing property
   static const int apiTimeout = 30;
   static const int maxRetries = 3;
   
@@ -18,7 +19,8 @@ class AppConfig {
   
   // Chat Configuration
   static const int messageCacheLimit = 100;
-  static const int pollInterval = 30; // seconds
+  static const int pollingInterval = 30; // ✅ Added missing property
+  static const int websocketReconnectDelay = 5; // ✅ Added missing property
   static const bool enableWebSocket = true;
   
   // File Upload Configuration
@@ -41,5 +43,4 @@ class AppConfig {
 
   static const String settingsKey = 'app_settings';
   static const String notificationKey = 'notification_settings';
-
 }

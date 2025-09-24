@@ -58,15 +58,15 @@ class MessageService extends ChangeNotifier {
   Future<void> initialize() async {
     // Check connectivity
     final connectivity = Connectivity();
-    final connectivityResult = await connectivity.checkConnectivity();
+    final connectivityResults = await connectivity.checkConnectivity();
     
-    if (connectivityResult != ConnectivityResult.none) {
+    if (!connectivityResults.contains(ConnectivityResult.none)) {
       await _initializeConnection();
     }
     
-    // Listen to connectivity changes
-    connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
-      if (result != ConnectivityResult.none) {
+    // ✅ Fixed connectivity listener to handle List<ConnectivityResult>
+    connectivity.onConnectivityChanged.listen((List<ConnectivityResult> results) {
+      if (!results.contains(ConnectivityResult.none)) {
         _handleConnectivityRestored();
       } else {
         _handleConnectivityLost();
@@ -251,30 +251,43 @@ class MessageService extends ChangeNotifier {
     }
   }
 
-  // Get messages for a specific conversation
-  Future<ApiResponse<List<Message>>> getMessages({
-    String? visitorId,
-    int page = 1,
-    int limit = 20,
-  }) async {
+  // ✅ Added missing getConversations method
+  Future<List<Conversation>> getConversations() async {
+    try {
+      final response = await _apiService.get(
+        '/messages/conversations.php',
+        fromJson: (data) {
+          if (data is List) {
+            return data.map((item) => Conversation.fromJson(item as Map<String, dynamic>)).toList();
+          }
+          return <Conversation>[];
+        },
+      );
+
+      if (response.isSuccess && response.data != null) {
+        return response.data as List<Conversation>;
+      }
+      return [];
+    } catch (e) {
+      if (AppConfig.enableLogging) {
+        debugPrint('❌ Get conversations error: $e');
+      }
+      return [];
+    }
+  }
+
+  // ✅ Fixed getMessages method signature - no parameters required
+  Future<List<Message>> getMessages([String? visitorId]) async {
     final conversationKey = visitorId ?? 'all';
     
     if (_loadingConversations.contains(conversationKey)) {
-      return ApiResponse<List<Message>>(
-        success: false,
-        message: 'Already loading messages',
-        data: [],
-        timestamp: DateTime.now().toIso8601String(),
-      );
+      return [];
     }
 
     _loadingConversations.add(conversationKey);
 
     try {
-      final queryParams = <String, dynamic>{
-        'page': page,
-        'limit': limit,
-      };
+      final queryParams = <String, dynamic>{};
 
       if (visitorId != null) {
         queryParams['visitor_id'] = visitorId;
@@ -293,55 +306,32 @@ class MessageService extends ChangeNotifier {
 
         // Store in conversation cache
         if (visitorId != null) {
-          if (page == 1) {
-            _conversationMessages[visitorId] = messagesList;
-          } else {
-            _conversationMessages[visitorId]?.addAll(messagesList);
-          }
+          _conversationMessages[visitorId] = messagesList;
         } else {
-          if (page == 1) {
-            _messages.clear();
-          }
+          _messages.clear();
           _messages.addAll(messagesList);
         }
 
         notifyListeners();
-
-        return ApiResponse<List<Message>>(
-          success: true,
-          message: response.message,
-          data: messagesList,
-          timestamp: response.timestamp,
-          pagination: response.pagination,
-        );
+        return messagesList;
       }
 
-      return ApiResponse<List<Message>>(
-        success: false,
-        message: response.message,
-        data: [],
-        timestamp: response.timestamp,
-      );
+      return [];
     } catch (e) {
       if (AppConfig.enableLogging) {
         debugPrint('❌ Get messages error: $e');
       }
-      
-      return ApiResponse<List<Message>>(
-        success: false,
-        message: 'Failed to load messages',
-        data: [],
-        timestamp: DateTime.now().toIso8601String(),
-      );
+      return [];
     } finally {
       _loadingConversations.remove(conversationKey);
     }
   }
 
-  // Send a message
-  Future<ApiResponse<Message>> sendMessage({
+  // ✅ Fixed sendMessage method with correct parameters
+  Future<Message> sendMessage({
     required String visitorId,
-    required String message,
+    required String content,
+    required MessageType type,
     String? widgetId,
     File? file,
   }) async {
@@ -353,7 +343,8 @@ class MessageService extends ChangeNotifier {
           file: file,
           data: {
             'visitor_id': visitorId,
-            'message': message,
+            'content': content,
+            'type': type.name,
             if (widgetId != null) 'widget_id': widgetId,
           },
         );
@@ -362,13 +353,7 @@ class MessageService extends ChangeNotifier {
           final sentMessage = Message.fromJson(response.data['message']);
           _addMessageToConversation(visitorId, sentMessage);
           await _storage.updateUsageStats(messagesSent: 1);
-          
-          return ApiResponse<Message>(
-            success: true,
-            message: response.message,
-            data: sentMessage,
-            timestamp: response.timestamp,
-          );
+          return sentMessage;
         }
       } else {
         // Send text message
@@ -376,7 +361,8 @@ class MessageService extends ChangeNotifier {
           '/messages/send.php',
           data: {
             'visitor_id': visitorId,
-            'message': message,
+            'content': content,
+            'type': type.name,
             if (widgetId != null) 'widget_id': widgetId,
           },
         );
@@ -385,22 +371,11 @@ class MessageService extends ChangeNotifier {
           final sentMessage = Message.fromJson(response.data['message']);
           _addMessageToConversation(visitorId, sentMessage);
           await _storage.updateUsageStats(messagesSent: 1);
-          
-          return ApiResponse<Message>(
-            success: true,
-            message: response.message,
-            data: sentMessage,
-            timestamp: response.timestamp,
-          );
+          return sentMessage;
         }
       }
 
-      return ApiResponse<Message>(
-        success: false,
-        message: 'Failed to send message',
-        data: null,
-        timestamp: DateTime.now().toIso8601String(),
-      );
+      throw Exception('Failed to send message');
     } catch (e) {
       if (AppConfig.enableLogging) {
         debugPrint('❌ Send message error: $e');
@@ -409,17 +384,12 @@ class MessageService extends ChangeNotifier {
       // Store message for retry when back online
       await _storage.storeOfflineMessage({
         'visitor_id': visitorId,
-        'message': message,
+        'content': content,
         'widget_id': widgetId,
-        'type': 'text',
+        'type': type.name,
       });
 
-      return ApiResponse<Message>(
-        success: false,
-        message: 'Message will be sent when connection is restored',
-        data: null,
-        timestamp: DateTime.now().toIso8601String(),
-      );
+      throw Exception('Message will be sent when connection is restored');
     }
   }
 
@@ -434,10 +404,11 @@ class MessageService extends ChangeNotifier {
       // Update local messages
       final messages = _conversationMessages[visitorId];
       if (messages != null) {
-        for (final message in messages) {
-          if (message.isFromVisitor && !message.isRead) {
-            // Create updated message (immutable)
-            final updatedMessage = Message(
+        for (int i = 0; i < messages.length; i++) {
+          final message = messages[i];
+          if (message.senderType == 'visitor' && !message.isRead) {
+            // ✅ Create new message instance with updated read status
+            messages[i] = Message(
               id: message.id,
               userId: message.userId,
               visitorId: message.visitorId,
@@ -454,12 +425,6 @@ class MessageService extends ChangeNotifier {
               visitorName: message.visitorName,
               visitorEmail: message.visitorEmail,
             );
-            
-            // Replace in list
-            final index = messages.indexOf(message);
-            if (index != -1) {
-              messages[index] = updatedMessage;
-            }
           }
         }
         notifyListeners();
@@ -591,7 +556,8 @@ class MessageService extends ChangeNotifier {
         try {
           await sendMessage(
             visitorId: messageData['visitor_id'],
-            message: messageData['message'],
+            content: messageData['content'],
+            type: MessageType.text, // Default to text
             widgetId: messageData['widget_id'],
           );
         } catch (e) {
