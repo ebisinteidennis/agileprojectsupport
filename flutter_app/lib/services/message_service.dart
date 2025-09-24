@@ -408,23 +408,7 @@ class MessageService extends ChangeNotifier {
           final message = messages[i];
           if (message.senderType == 'visitor' && !message.isRead) {
             // ✅ Create new message instance with updated read status
-            messages[i] = Message(
-              id: message.id,
-              userId: message.userId,
-              visitorId: message.visitorId,
-              widgetId: message.widgetId,
-              message: message.message,
-              senderType: message.senderType,
-              isRead: true, // Mark as read
-              createdAt: message.createdAt,
-              filePath: message.filePath,
-              fileName: message.fileName,
-              fileSize: message.fileSize,
-              fileType: message.fileType,
-              fileInfo: message.fileInfo,
-              visitorName: message.visitorName,
-              visitorEmail: message.visitorEmail,
-            );
+            messages[i] = message.copyWith(isRead: true);
           }
         }
         notifyListeners();
@@ -445,7 +429,8 @@ class MessageService extends ChangeNotifier {
   void _handleNewMessage(Map<String, dynamic> data) {
     try {
       final message = Message.fromJson(data);
-      _addMessageToConversation(message.visitorId, message);
+      final conversationId = message.visitorId ?? message.receiverId.toString();
+      _addMessageToConversation(conversationId, message);
       _newMessageController.add(message);
     } catch (e) {
       if (AppConfig.enableLogging) {

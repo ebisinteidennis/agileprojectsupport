@@ -262,7 +262,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildMessageBubble(Message message) {
     // ✅ Fixed to use proper message properties
-    final isMe = message.senderType == 'agent'; // Agent messages are from "me"
+    final isMe = message.senderType == 'agent' || message.senderId == 1; // Agent messages are from "me"
     
     return Container(
       margin: const EdgeInsets.only(bottom: AppConstants.paddingSmall),
@@ -300,7 +300,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    message.message,  // ✅ Fixed property name
+                    message.content,  // ✅ Fixed property name - use content instead of message
                     style: AppConstants.bodyStyle.copyWith(
                       color: isMe ? Colors.white : Colors.black87,
                     ),

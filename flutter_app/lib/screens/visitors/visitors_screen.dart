@@ -57,9 +57,9 @@ class _VisitorsScreenState extends State<VisitorsScreen>
 
       if (mounted) {
         setState(() {
-          // ✅ Fixed type casting issues
-          _stats = statsResponse.data;
-          _visitors = visitorsResponse.data ?? [];
+          // ✅ Fixed type casting with proper null checks
+          _stats = statsResponse.data as VisitorStats?;
+          _visitors = (visitorsResponse.data as List<Visitor>?) ?? [];
           _isLoading = false;
         });
       }

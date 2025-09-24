@@ -138,26 +138,26 @@ class AppHelpers {
 
   // UI Utilities
   static void showSnackBar(BuildContext context, String message, {
-    MessageType type = MessageType.info,
+    SnackBarType type = SnackBarType.info,
     Duration duration = const Duration(seconds: 3),
   }) {
     Color backgroundColor;
     IconData icon;
 
     switch (type) {
-      case MessageType.success:
+      case SnackBarType.success:
         backgroundColor = AppConstants.successColor;
         icon = Icons.check_circle;
         break;
-      case MessageType.warning:
+      case SnackBarType.warning:
         backgroundColor = AppConstants.warningColor;
         icon = Icons.warning;
         break;
-      case MessageType.error:
+      case SnackBarType.error:
         backgroundColor = AppConstants.errorColor;
         icon = Icons.error;
         break;
-      case MessageType.info:
+      case SnackBarType.info:
       default:
         backgroundColor = AppConstants.primaryColor;
         icon = Icons.info;
