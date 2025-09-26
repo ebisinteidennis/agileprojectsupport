@@ -429,6 +429,7 @@ class MessageService extends ChangeNotifier {
   void _handleNewMessage(Map<String, dynamic> data) {
     try {
       final message = Message.fromJson(data);
+      // ✅ FIXED: Handle nullable visitorId properly
       final conversationId = message.visitorId ?? message.receiverId.toString();
       _addMessageToConversation(conversationId, message);
       _newMessageController.add(message);
@@ -473,10 +474,12 @@ class MessageService extends ChangeNotifier {
     }
   }
 
-  // Process new messages from polling
+  // ✅ FIXED: Process new messages from polling with proper null handling
   void _processNewMessages(List<Message> newMessages) {
     for (final message in newMessages) {
-      _addMessageToConversation(message.visitorId, message);
+      // ✅ FIXED: Handle nullable visitorId properly
+      final conversationId = message.visitorId ?? message.receiverId.toString();
+      _addMessageToConversation(conversationId, message);
       _newMessageController.add(message);
     }
   }
